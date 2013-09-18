@@ -1,10 +1,14 @@
 package com.deadmoose.flumptools.flumpview;
 
 import java.io.File;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
+import com.google.common.collect.Lists;
 
 import playn.core.GroupLayer;
 import playn.core.ImmediateLayer;
@@ -124,20 +128,26 @@ public class FlumpViewScreen extends UIScreen
 
                 _movies.destroyAll();
 
-                for (final Map.Entry<String, Symbol> entry : library.symbols.entrySet()) {
-                    if (entry.getKey().startsWith("~")) {
-                        continue;
-                    }
-                    if (entry.getValue() instanceof Movie.Symbol) {
-                        Button button = new Button(entry.getKey());
-                        button.onClick(new UnitSlot() {
-                            @Override public void onEmit () {
-                                _player.loop(entry.getKey());
-                            }
-                        });
+                List<String> movies = Lists.newArrayList();
 
-                        _movies.add(button);
+                for (Map.Entry<String, Symbol> entry : library.symbols.entrySet()) {
+                    if (!entry.getKey().startsWith("~") &&
+                        entry.getValue() instanceof Movie.Symbol) {
+                        movies.add(entry.getKey());
                     }
+                }
+
+                Collections.sort(movies);
+
+                for (final String movie : movies) {
+                    Button button = new Button(movie);
+                    button.onClick(new UnitSlot() {
+                        @Override public void onEmit () {
+                            _player.loop(movie);
+                        }
+                    });
+
+                    _movies.add(button);
                 }
 
                 ((Button)_movies.childAt(0)).click();
