@@ -101,7 +101,7 @@ public class FlumpViewScreen extends UIScreen
             _chooser.cancelSelection();
         }
 
-        _chooser = new JFileChooser();
+        _chooser = new JFileChooser(PlayN.storage().getItem(PREF_KEY));
         _chooser.setFileFilter(new FileNameExtensionFilter("Flump libraries", "json"));
 
         int returnVal = _chooser.showOpenDialog(null);
@@ -112,6 +112,7 @@ public class FlumpViewScreen extends UIScreen
 
     protected void loadFlumpLibrary (File file)
     {
+        PlayN.storage().setItem(PREF_KEY, file.getParentFile().getParentFile().getAbsolutePath());
         Library.fromAssets(file.getParentFile().getAbsolutePath(), new Callback<Library>() {
             public void onSuccess (Library library) {
                 if (_player != null) {
@@ -154,4 +155,6 @@ public class FlumpViewScreen extends UIScreen
     protected MoviePlayer _player;
     protected GroupLayer _flumpLayer = PlayN.graphics().createGroupLayer();
     protected Group _movies;
+
+    protected static final String PREF_KEY = "FlumpViewPath";
 }
