@@ -20,6 +20,7 @@ import playn.core.util.Clock;
 import react.UnitSlot;
 import react.Value;
 
+import tripleplay.flump.JsonLoader;
 import tripleplay.flump.Library;
 import tripleplay.flump.Movie;
 import tripleplay.flump.MoviePlayer;
@@ -117,7 +118,7 @@ public class FlumpViewScreen extends UIScreen
     protected void loadFlumpLibrary (File file)
     {
         PlayN.storage().setItem(PREF_KEY, file.getParentFile().getParentFile().getAbsolutePath());
-        Library.fromAssets(file.getParentFile().getAbsolutePath(), new Callback<Library>() {
+        JsonLoader.loadLibrary(file.getParentFile().getAbsolutePath(), new Callback<Library>() {
             public void onSuccess (Library library) {
                 if (_player != null) {
                     _player.destroy();
