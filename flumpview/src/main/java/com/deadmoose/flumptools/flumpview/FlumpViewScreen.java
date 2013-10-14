@@ -19,6 +19,7 @@ import playn.core.util.Clock;
 
 import react.UnitSlot;
 import react.Value;
+import react.ValueView;
 
 import tripleplay.flump.JsonLoader;
 import tripleplay.flump.Library;
@@ -33,6 +34,7 @@ import tripleplay.ui.Root;
 import tripleplay.ui.Scroller;
 import tripleplay.ui.Shim;
 import tripleplay.ui.SimpleStyles;
+import tripleplay.ui.ToggleButton;
 import tripleplay.ui.layout.AxisLayout;
 import tripleplay.ui.layout.BorderLayout;
 import tripleplay.util.Colors;
@@ -140,18 +142,29 @@ public class FlumpViewScreen extends UIScreen
 
                 Collections.sort(movies);
 
+                final List<ToggleButton> buttons = Lists.newArrayList();
+
                 for (final String movie : movies) {
-                    Button button = new Button(movie);
-                    button.onClick(new UnitSlot() {
-                        @Override public void onEmit () {
-                            _player.loop(movie);
+                    final ToggleButton button = new ToggleButton(movie);
+                    buttons.add(button);
+                    button.selected().connect(new ValueView.Listener<Boolean>() {
+                        @Override public void onChange (Boolean value, Boolean oldValue) {
+                            if (value) {
+                                _player.loop(movie);
+
+                                for (ToggleButton otherButton : buttons) {
+                                    if (otherButton != button) {
+                                        otherButton.selected().update(false);
+                                    }
+                                }
+                            }
                         }
                     });
 
                     _movies.add(button);
                 }
 
-                ((Button)_movies.childAt(0)).click();
+                ((ToggleButton)_movies.childAt(0)).selected().update(true);
             }
 
             public void onFailure (Throwable cause) {
