@@ -124,10 +124,12 @@ public class FlumpViewScreen extends UIScreen
 
     protected void loadFlumpLibrary (File file)
     {
-        ((JavaPlatform)PlayN.platform()).setTitle("Flumpview - " + file.getParentFile().getName());
+        JavaPlatform platform = (JavaPlatform)PlayN.platform();
+        platform.setTitle("Flumpview - " + file.getParentFile().getName());
+        FileAssets assets = new FileAssets(platform);
         _status.text.update("");
         PlayN.storage().setItem(PREF_KEY, file.getParentFile().getParentFile().getAbsolutePath());
-        JsonLoader.loadLibrary(file.getParentFile().getAbsolutePath(), new Callback<Library>() {
+        JsonLoader.loadLibrary(assets, file.getParentFile().getAbsolutePath(), new Callback<Library>() {
             public void onSuccess (Library library) {
                 if (_player != null) {
                     _player.destroy();
