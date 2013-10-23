@@ -31,10 +31,12 @@ import tripleplay.game.ScreenStack;
 import tripleplay.game.UIScreen;
 import tripleplay.ui.Button;
 import tripleplay.ui.Group;
+import tripleplay.ui.Label;
 import tripleplay.ui.Root;
 import tripleplay.ui.Scroller;
 import tripleplay.ui.Shim;
 import tripleplay.ui.SimpleStyles;
+import tripleplay.ui.Style;
 import tripleplay.ui.ToggleButton;
 import tripleplay.ui.layout.AxisLayout;
 import tripleplay.ui.layout.BorderLayout;
@@ -81,6 +83,8 @@ public class FlumpViewScreen extends UIScreen
             }
         });
         _root.add(loadButton.setConstraint(BorderLayout.SOUTH));
+        _status = new Label().addStyles(Style.COLOR.is(Colors.RED));
+        _root.add(_status.setConstraint(BorderLayout.NORTH));
 
         _movies = new Group(AxisLayout.vertical());
 
@@ -121,6 +125,7 @@ public class FlumpViewScreen extends UIScreen
     protected void loadFlumpLibrary (File file)
     {
         ((JavaPlatform)PlayN.platform()).setTitle("Flumpview - " + file.getParentFile().getName());
+        _status.text.update("");
         PlayN.storage().setItem(PREF_KEY, file.getParentFile().getParentFile().getAbsolutePath());
         JsonLoader.loadLibrary(file.getParentFile().getAbsolutePath(), new Callback<Library>() {
             public void onSuccess (Library library) {
@@ -171,6 +176,7 @@ public class FlumpViewScreen extends UIScreen
 
             public void onFailure (Throwable cause) {
                 PlayN.log().error("Error loading flump", cause);
+                _status.text.update("Error loading flump: " + cause.getMessage());
             }
         });
     }
@@ -181,6 +187,7 @@ public class FlumpViewScreen extends UIScreen
     protected MoviePlayer _player;
     protected GroupLayer _flumpLayer = PlayN.graphics().createGroupLayer();
     protected Group _movies;
+    protected Label _status;
 
     protected static final String PREF_KEY = "FlumpViewPath";
 }
