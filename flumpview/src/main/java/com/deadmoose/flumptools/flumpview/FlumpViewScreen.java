@@ -16,6 +16,7 @@ import playn.core.PlayN;
 import playn.core.Surface;
 import playn.core.util.Callback;
 import playn.core.util.Clock;
+import playn.java.JavaPlatform;
 
 import react.UnitSlot;
 import react.Value;
@@ -119,6 +120,7 @@ public class FlumpViewScreen extends UIScreen
 
     protected void loadFlumpLibrary (File file)
     {
+        ((JavaPlatform)PlayN.platform()).setTitle("Flumpview - " + file.getParentFile().getName());
         PlayN.storage().setItem(PREF_KEY, file.getParentFile().getParentFile().getAbsolutePath());
         JsonLoader.loadLibrary(file.getParentFile().getAbsolutePath(), new Callback<Library>() {
             public void onSuccess (Library library) {

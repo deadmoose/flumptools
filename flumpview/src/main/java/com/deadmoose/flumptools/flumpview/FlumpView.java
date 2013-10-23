@@ -65,6 +65,7 @@ public class FlumpView extends Game.Default
 
                 {
                     setPathPrefix("");
+                    setTitle("Flumpview");
                 }
             };
         };
