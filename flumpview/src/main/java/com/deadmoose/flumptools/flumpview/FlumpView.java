@@ -19,6 +19,7 @@ public class FlumpView extends Game.Default
         JavaPlatform.register(config);
 
         JavaPlatform platform = new JavaPlatform(config);
+        platform.setPropagateEvents(true);
 
         platform.setTitle("Flumpview");
         PlayN.setPlatform(platform);
