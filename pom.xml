@@ -14,7 +14,7 @@
   <name>FlumpTools Metaproject</name>
 
   <properties>
-    <playn.version>1.8-SNAPSHOT</playn.version>
+    <playn.version>1.9-SNAPSHOT</playn.version>
   </properties>
 
   <dependencies>
