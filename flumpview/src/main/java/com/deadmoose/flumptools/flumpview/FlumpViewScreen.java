@@ -100,7 +100,8 @@ public class FlumpViewScreen extends UIScreen
         iface.destroyRoot(_root);
     }
 
-    @Override public void paint (Clock clock) {
+    @Override public void paint (Clock clock)
+    {
         super.paint(clock);
         if (_player != null) {
             _player.paint(clock);
