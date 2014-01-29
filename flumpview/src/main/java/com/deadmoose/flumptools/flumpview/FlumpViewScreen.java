@@ -10,11 +10,14 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import playn.core.GroupLayer;
 import playn.core.ImmediateLayer;
+import playn.core.Layer;
 import playn.core.PlayN;
+import playn.core.Pointer;
 import playn.core.Surface;
 import playn.core.util.Callback;
 import playn.core.util.Clock;
 import playn.java.JavaPlatform;
+import pythagoras.f.Point;
 import react.UnitSlot;
 import react.Value;
 import react.ValueView;
@@ -76,6 +79,30 @@ public class FlumpViewScreen extends UIScreen
                 surface.fillRect(-1, -10, 2, 20);
             }
         }).setDepth(1));
+
+        _flumpLayer.setHitTester(new Layer.HitTester() {
+            @Override public Layer hitTest (Layer layer, Point p) {
+                return layer;
+            }
+        });
+        _flumpLayer.addListener(new Pointer.Adapter() {
+            @Override public void onPointerStart (Pointer.Event event) {
+                _lastX = event.x();
+                _lastY = event.y();
+            }
+
+            @Override public void onPointerDrag (Pointer.Event event) {
+                float dx = _lastX - event.x();
+                float dy = _lastY - event.y();
+
+                _flumpLayer.setTranslation(_flumpLayer.tx() - dx, _flumpLayer.ty() - dy);
+
+                _lastX = event.x();
+                _lastY = event.y();
+            }
+
+            protected float _lastX, _lastY;
+        });
         _flumpLayer.add(_textureLayer);
 
         Button loadButton = new Button("Load Library");
