@@ -10,6 +10,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import playn.core.GroupLayer;
 import playn.core.ImmediateLayer;
+import playn.core.Keyboard;
 import playn.core.Layer;
 import playn.core.PlayN;
 import playn.core.Pointer;
@@ -65,13 +66,14 @@ public class FlumpViewScreen extends UIScreen
             @Override protected void layout () {
                 super.layout();
 
-                _flumpLayer.setTranslation(size().width()/2, size().height()/2);
+                _pannedLayer.setTranslation(size().width()/2, size().height()/2);
             }
         };
-        shim.layer.add(_flumpLayer);
+        shim.layer.add(_pannedLayer);
         _root.add(shim.setConstraint(BorderLayout.CENTER));
 
-        _flumpLayer.add(PlayN.graphics().createImmediateLayer(new ImmediateLayer.Renderer() {
+        _pannedLayer.add(_flumpLayer);
+        _pannedLayer.add(PlayN.graphics().createImmediateLayer(new ImmediateLayer.Renderer() {
             public void render (Surface surface) {
                 // Crosshair at the origin
                 surface.setFillColor(Colors.WHITE);
@@ -80,12 +82,12 @@ public class FlumpViewScreen extends UIScreen
             }
         }).setDepth(1));
 
-        _flumpLayer.setHitTester(new Layer.HitTester() {
+        _pannedLayer.setHitTester(new Layer.HitTester() {
             @Override public Layer hitTest (Layer layer, Point p) {
                 return layer;
             }
         });
-        _flumpLayer.addListener(new Pointer.Adapter() {
+        _pannedLayer.addListener(new Pointer.Adapter() {
             @Override public void onPointerStart (Pointer.Event event) {
                 _lastX = event.x();
                 _lastY = event.y();
@@ -95,13 +97,35 @@ public class FlumpViewScreen extends UIScreen
                 float dx = _lastX - event.x();
                 float dy = _lastY - event.y();
 
-                _flumpLayer.setTranslation(_flumpLayer.tx() - dx, _flumpLayer.ty() - dy);
+                _pannedLayer.setTranslation(_pannedLayer.tx() - dx, _pannedLayer.ty() - dy);
 
                 _lastX = event.x();
                 _lastY = event.y();
             }
 
             protected float _lastX, _lastY;
+        });
+        PlayN.keyboard().setListener(new Keyboard.Adapter() {
+            @Override public void onKeyTyped (Keyboard.TypedEvent event) {
+                switch (event.typedChar()) {
+                case '-':
+                    _zoom.update(_zoom.get() * 0.9f);
+                    break;
+                case '+':
+                    _zoom.update(_zoom.get() * 1.1f);
+                    break;
+                case '=':
+                case '1':
+                    _zoom.update(1f);
+                    break;
+                }
+            }
+        });
+
+        _zoom.connectNotify(new ValueView.Listener<Float>() {
+            @Override public void onChange (Float value, Float oldValue) {
+                _flumpLayer.setScale(value);
+            }
         });
         _flumpLayer.add(_textureLayer);
 
@@ -256,11 +280,14 @@ public class FlumpViewScreen extends UIScreen
     protected ScreenStack _screens;
     protected JFileChooser _chooser;
     protected MoviePlayer _player;
+    protected GroupLayer _pannedLayer = PlayN.graphics().createGroupLayer();
     protected GroupLayer _flumpLayer = PlayN.graphics().createGroupLayer();
     protected GroupLayer _textureLayer = PlayN.graphics().createGroupLayer();
     protected Group _movies;
     protected Group _textures;
     protected Label _status;
+
+    protected Value<Float> _zoom = Value.create(1f);
 
     protected static final String PREF_KEY = "FlumpViewPath";
 }
