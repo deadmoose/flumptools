@@ -2,11 +2,3 @@ language: java
 jdk:
   - openjdk6
   - openjdk7
-
-before_install:
-  - git clone https://github.com/threerings/playn
-  - git clone https://github.com/threerings/tripleplay
-
-install:
-  - (cd playn && mvn install)
-  - (cd tripleplay && mvn install)
