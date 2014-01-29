@@ -14,6 +14,7 @@ import pythagoras.f.Point;
 
 import playn.core.GroupLayer;
 import playn.core.ImmediateLayer;
+import playn.core.Key;
 import playn.core.Keyboard;
 import playn.core.Layer;
 import playn.core.Mouse;
@@ -121,6 +122,11 @@ public class FlumpViewScreen extends UIScreen
             }
         });
         PlayN.keyboard().setListener(new Keyboard.Adapter() {
+            @Override public void onKeyDown (Keyboard.Event event) {
+                if (event.key() == Key.HOME) {
+                    _pannedLayer.setTranslation(0, 0);
+                }
+            }
             @Override public void onKeyTyped (Keyboard.TypedEvent event) {
                 switch (event.typedChar()) {
                 case '-':
