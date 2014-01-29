@@ -62,14 +62,16 @@ public class FlumpViewScreen extends UIScreen
         _root = iface.createRoot(new BorderLayout(), SimpleStyles.newSheet(), layer);
         _root.setSize(width(), height());
 
+        final GroupLayer baseLayer = PlayN.graphics().createGroupLayer();
         Shim shim = new Shim(1, 1) {
             @Override protected void layout () {
                 super.layout();
 
-                _pannedLayer.setTranslation(size().width()/2, size().height()/2);
+                baseLayer.setTranslation(size().width()/2, size().height()/2);
             }
         };
-        shim.layer.add(_pannedLayer);
+        shim.layer.add(baseLayer);
+        baseLayer.add(_pannedLayer);
         _root.add(shim.setConstraint(BorderLayout.CENTER));
 
         _pannedLayer.add(_flumpLayer);
