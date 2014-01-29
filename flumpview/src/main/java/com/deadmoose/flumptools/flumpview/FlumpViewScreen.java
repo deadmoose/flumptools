@@ -8,20 +8,26 @@ import java.util.Map;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import com.google.common.collect.Lists;
+
+import pythagoras.f.Point;
+
 import playn.core.GroupLayer;
 import playn.core.ImmediateLayer;
 import playn.core.Keyboard;
 import playn.core.Layer;
+import playn.core.Mouse;
 import playn.core.PlayN;
 import playn.core.Pointer;
 import playn.core.Surface;
 import playn.core.util.Callback;
 import playn.core.util.Clock;
 import playn.java.JavaPlatform;
-import pythagoras.f.Point;
+
 import react.UnitSlot;
 import react.Value;
 import react.ValueView;
+
 import tripleplay.flump.JsonLoader;
 import tripleplay.flump.Library;
 import tripleplay.flump.Movie;
@@ -43,8 +49,6 @@ import tripleplay.ui.ToggleButton;
 import tripleplay.ui.layout.AxisLayout;
 import tripleplay.ui.layout.BorderLayout;
 import tripleplay.util.Colors;
-
-import com.google.common.collect.Lists;
 
 public class FlumpViewScreen extends UIScreen
 {
@@ -107,14 +111,23 @@ public class FlumpViewScreen extends UIScreen
 
             protected float _lastX, _lastY;
         });
+        _pannedLayer.addListener(new Mouse.LayerAdapter() {
+            @Override public void onMouseWheelScroll (Mouse.WheelEvent event) {
+                if (event.velocity() < 0) {
+                    zoomIn(-event.velocity());
+                } else {
+                    zoomOut(event.velocity());
+                }
+            }
+        });
         PlayN.keyboard().setListener(new Keyboard.Adapter() {
             @Override public void onKeyTyped (Keyboard.TypedEvent event) {
                 switch (event.typedChar()) {
                 case '-':
-                    zoomOut();
+                    zoomOut(1);
                     break;
                 case '+':
-                    zoomIn();
+                    zoomIn(1);
                     break;
                 case '=':
                 case '1':
@@ -278,14 +291,14 @@ public class FlumpViewScreen extends UIScreen
         });
     }
 
-    protected void zoomIn ()
+    protected void zoomIn (float clicks)
     {
-        _zoom.update(_zoom.get() * 1.1f);
+        _zoom.update(_zoom.get() * clicks * 1.1f);
     }
 
-    protected void zoomOut ()
+    protected void zoomOut (float clicks)
     {
-        _zoom.update(_zoom.get() * 0.9f);
+        _zoom.update(_zoom.get() * clicks * 0.9f);
     }
 
     protected Root _root;
