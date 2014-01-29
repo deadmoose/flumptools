@@ -111,10 +111,10 @@ public class FlumpViewScreen extends UIScreen
             @Override public void onKeyTyped (Keyboard.TypedEvent event) {
                 switch (event.typedChar()) {
                 case '-':
-                    _zoom.update(_zoom.get() * 0.9f);
+                    zoomOut();
                     break;
                 case '+':
-                    _zoom.update(_zoom.get() * 1.1f);
+                    zoomIn();
                     break;
                 case '=':
                 case '1':
@@ -276,6 +276,16 @@ public class FlumpViewScreen extends UIScreen
                 _status.text.update("Error loading flump: " + cause.getMessage());
             }
         });
+    }
+
+    protected void zoomIn ()
+    {
+        _zoom.update(_zoom.get() * 1.1f);
+    }
+
+    protected void zoomOut ()
+    {
+        _zoom.update(_zoom.get() * 0.9f);
     }
 
     protected Root _root;
