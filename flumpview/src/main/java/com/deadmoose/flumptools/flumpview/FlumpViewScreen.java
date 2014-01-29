@@ -70,6 +70,7 @@ public class FlumpViewScreen extends UIScreen
 
         _flumpLayer.add(PlayN.graphics().createImmediateLayer(new ImmediateLayer.Renderer() {
             public void render (Surface surface) {
+                // Crosshair at the origin
                 surface.setFillColor(Colors.WHITE);
                 surface.fillRect(-10, -1, 20, 2);
                 surface.fillRect(-1, -10, 2, 20);
