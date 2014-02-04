@@ -25,6 +25,7 @@ import playn.core.util.Callback;
 import playn.core.util.Clock;
 import playn.java.JavaPlatform;
 
+import react.Slot;
 import react.UnitSlot;
 import react.Value;
 import react.ValueView;
@@ -156,9 +157,16 @@ public class FlumpViewScreen extends UIScreen
                 openFileChooser();
             }
         });
-        _root.add(loadButton.setConstraint(BorderLayout.SOUTH));
         _status = new Label().addStyles(Style.COLOR.is(Colors.RED));
-        _root.add(_status.setConstraint(BorderLayout.NORTH));
+        _status.text.connectNotify(new Slot<String>() {
+            @Override public void onEmit (String str) {
+                _status.setVisible(str != null && !str.isEmpty());
+            }
+        });
+        Group bottomGroup = new Group(AxisLayout.vertical());
+        bottomGroup.add(loadButton);
+        bottomGroup.add(_status);
+        _root.add(bottomGroup.setConstraint(BorderLayout.SOUTH));
 
         _movies = new Group(AxisLayout.vertical().stretchByDefault().offStretch());
         _textures = new Group(AxisLayout.vertical().stretchByDefault().offStretch());
@@ -284,7 +292,6 @@ public class FlumpViewScreen extends UIScreen
                             }
                         }
                     });
-
                 }
 
                 ((ToggleButton)_movies.childAt(0)).selected().update(true);
