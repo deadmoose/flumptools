@@ -25,6 +25,7 @@ import playn.core.util.Callback;
 import playn.core.util.Clock;
 import playn.java.JavaPlatform;
 
+import react.Functions;
 import react.Slot;
 import react.UnitSlot;
 import react.Value;
@@ -38,13 +39,16 @@ import tripleplay.flump.Symbol;
 import tripleplay.flump.Texture;
 import tripleplay.game.ScreenStack;
 import tripleplay.game.UIScreen;
+import tripleplay.ui.Background;
 import tripleplay.ui.Button;
+import tripleplay.ui.CheckBox;
 import tripleplay.ui.Group;
 import tripleplay.ui.Label;
 import tripleplay.ui.Root;
 import tripleplay.ui.Scroller;
 import tripleplay.ui.Shim;
 import tripleplay.ui.SimpleStyles;
+import tripleplay.ui.Slider;
 import tripleplay.ui.Style;
 import tripleplay.ui.Tabs;
 import tripleplay.ui.ToggleButton;
@@ -166,7 +170,7 @@ public class FlumpViewScreen extends UIScreen
         Group bottomGroup = new Group(AxisLayout.vertical());
         bottomGroup.add(loadButton);
         bottomGroup.add(_status);
-        _root.add(bottomGroup.setConstraint(BorderLayout.SOUTH));
+        _root.add(bottomGroup.setConstraint(BorderLayout.NORTH));
 
         _movies = new Group(AxisLayout.vertical().stretchByDefault().offStretch());
         _textures = new Group(AxisLayout.vertical().stretchByDefault().offStretch());
@@ -176,6 +180,29 @@ public class FlumpViewScreen extends UIScreen
         tabs.add("Textures", new Scroller(_textures));
 
         _root.add(tabs.setConstraint(BorderLayout.EAST));
+
+        _autoplay = new CheckBox();
+        _autoplay.checked.update(true);
+
+        _slider = new Slider(0, 0, 1);
+        _slider.addStyles(Style.BACKGROUND.is(Background.solid(Colors.WHITE)));
+        _slider.value.connect(new Slot<Float>() {
+            @Override public void onEmit (Float value) {
+                if (_autoplay.checked.get()) {
+                    // We aren't driving things
+                    return;
+                }
+                _player.movie().setPosition(value * _player.movie().symbol().duration);
+            }
+        });
+
+        Group scrubber = new Group(AxisLayout.horizontal());
+        scrubber.add(_autoplay);
+        scrubber.add(_slider.setConstraint(AxisLayout.stretched()));
+
+        _autoplay.checked.connectNotify(_slider.enabledSlot().compose(Functions.NOT));
+
+        _root.add(scrubber.setConstraint(BorderLayout.SOUTH));
 
         openFileChooser();
     }
@@ -190,8 +217,9 @@ public class FlumpViewScreen extends UIScreen
     @Override public void paint (Clock clock)
     {
         super.paint(clock);
-        if (_player != null) {
+        if (_player != null && _autoplay.checked.get()) {
             _player.paint(clock);
+            _slider.value.update(_player.movie().position() / _player.movie().symbol().duration);
         }
     }
 
@@ -326,6 +354,9 @@ public class FlumpViewScreen extends UIScreen
     protected Label _status;
 
     protected Value<Float> _zoom = Value.create(1f);
+
+    protected CheckBox _autoplay;
+    protected Slider _slider;
 
     protected static final String PREF_KEY = "FlumpViewPath";
 }
