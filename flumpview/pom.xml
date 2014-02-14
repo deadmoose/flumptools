@@ -19,9 +19,9 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.googlecode.playn</groupId>
-      <artifactId>playn-java</artifactId>
-      <version>${playn.version}</version>
+      <groupId>com.deadmoose.flumptools</groupId>
+      <artifactId>playn</artifactId>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
 

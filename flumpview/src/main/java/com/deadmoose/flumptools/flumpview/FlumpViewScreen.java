@@ -10,6 +10,14 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import com.google.common.collect.Lists;
 
+import com.deadmoose.flumptools.playn.FileAssets;
+
+import react.Functions;
+import react.Slot;
+import react.UnitSlot;
+import react.Value;
+import react.ValueView;
+
 import pythagoras.f.Point;
 
 import playn.core.GroupLayer;
@@ -24,12 +32,6 @@ import playn.core.Surface;
 import playn.core.util.Callback;
 import playn.core.util.Clock;
 import playn.java.JavaPlatform;
-
-import react.Functions;
-import react.Slot;
-import react.UnitSlot;
-import react.Value;
-import react.ValueView;
 
 import tripleplay.flump.JsonLoader;
 import tripleplay.flump.Library;

@@ -1,4 +1,4 @@
-package com.deadmoose.flumptools.flumpview;
+package com.deadmoose.flumptools.playn;
 
 import java.io.File;
 import java.io.FileNotFoundException;

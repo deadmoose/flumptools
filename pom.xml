@@ -26,6 +26,7 @@
   </dependencies>
 
   <modules>
+    <module>playn</module>
     <module>flumpview</module>
   </modules>
 </project>
