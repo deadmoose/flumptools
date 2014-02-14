@@ -27,6 +27,7 @@
 
   <modules>
     <module>playn</module>
+    <module>flumpcli</module>
     <module>flumpview</module>
   </modules>
 </project>
