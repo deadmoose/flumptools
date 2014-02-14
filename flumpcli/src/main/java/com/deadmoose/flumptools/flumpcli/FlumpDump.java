@@ -18,6 +18,9 @@ import tripleplay.flump.Movie;
 import tripleplay.flump.Symbol;
 import tripleplay.flump.Texture;
 
+/**
+ * Prints the names of symbols in a Flump library.
+ */
 public class FlumpDump extends LibraryTool
 {
     public static final String NAME = "dump";
