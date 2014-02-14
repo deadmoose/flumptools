@@ -14,6 +14,7 @@ public class FlumpCLI
     @Argument(required=true, handler=SubCommandHandler.class)
     @SubCommands({
         @SubCommand(name=FlumpDump.NAME, impl=FlumpDump.class),
+        @SubCommand(name=FlumpStrip.NAME, impl=FlumpStrip.class),
     })
     public Runnable cmd;
 
