@@ -1,6 +1,5 @@
 package com.deadmoose.flumptools.flumpcli;
 
-import java.io.File;
 import java.io.PrintStream;
 import java.util.Collections;
 import java.util.List;
@@ -15,15 +14,12 @@ import com.google.common.collect.Maps;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.Option;
 
-import playn.core.util.Callback;
-
-import tripleplay.flump.JsonLoader;
 import tripleplay.flump.Library;
 import tripleplay.flump.Movie;
 import tripleplay.flump.Symbol;
 import tripleplay.flump.Texture;
 
-public class FlumpDump extends PlayNTool
+public class FlumpDump extends LibraryTool
 {
     public static final String NAME = "dump";
 
@@ -40,32 +36,15 @@ public class FlumpDump extends PlayNTool
     public boolean showOnlyTextures = false;
 
     @Override
-    protected void execute ()
+    protected void checkArguments ()
     {
-        File lib = new File(libraryFile);
-
-        Preconditions.checkArgument(libraryFile.endsWith("library.json"),
-            "Invalid library");
-        Preconditions.checkArgument(lib.exists(), "Library does not exist");
-        Preconditions.checkArgument(lib.isFile(), "Library is not a file");
+        super.checkArguments();
         Preconditions.checkArgument(!(showOnlyMovies && showOnlyTextures),
             "Can only use one of --movies and --textures");
-
-        JsonLoader.loadLibrary(lib.getParent(), new Callback<Library>() {
-            @Override
-            public void onSuccess (Library library) {
-                dumpLibrary(library);
-                System.exit(0);
-            }
-
-            @Override public void onFailure (Throwable cause) {
-                System.err.println("Could not load library: " + cause.getMessage());
-                System.exit(-1);
-            }
-        });
     }
 
-    protected void dumpLibrary (Library lib)
+    @Override
+    protected void execute (Library lib)
     {
         Map<String, Symbol> symbols = lib.symbols;
         if (!showHidden) {
@@ -85,7 +64,6 @@ public class FlumpDump extends PlayNTool
                     print("    ");
                     super.println(str);
                 }
-
             };
         }
 
