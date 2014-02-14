@@ -11,7 +11,6 @@ import com.google.common.base.Predicates;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.Option;
 
 import tripleplay.flump.Library;
@@ -22,9 +21,6 @@ import tripleplay.flump.Texture;
 public class FlumpDump extends LibraryTool
 {
     public static final String NAME = "dump";
-
-    @Argument(required=true)
-    public String libraryFile;
 
     @Option(name="--show-hidden", usage="Show hidden symbols")
     public boolean showHidden = false;
