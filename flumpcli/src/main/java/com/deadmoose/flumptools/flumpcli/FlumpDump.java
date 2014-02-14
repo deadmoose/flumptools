@@ -1,6 +1,7 @@
 package com.deadmoose.flumptools.flumpcli;
 
 import java.io.File;
+import java.io.PrintStream;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -75,23 +76,42 @@ public class FlumpDump extends PlayNTool
             });
         }
 
+        PrintStream out = System.out;
+
+        if (!showOnlyTextures && !showOnlyMovies) {
+            // Showing both, so put headers and indent
+            out = new PrintStream(out) {
+                @Override public void println (String str) {
+                    print("    ");
+                    super.println(str);
+                }
+
+            };
+        }
+
         if (!showOnlyTextures) {
-            dumpSymbols(symbols, Predicates.instanceOf(Movie.Symbol.class));
+            if (!showOnlyMovies) {
+                System.out.println("Movies:");
+            }
+            dumpSymbols(symbols, Predicates.instanceOf(Movie.Symbol.class), out);
         }
 
         if (!showOnlyMovies) {
-            dumpSymbols(symbols, Predicates.instanceOf(Texture.Symbol.class));
+            if (!showOnlyTextures) {
+                System.out.println("Textures:");
+            }
+            dumpSymbols(symbols, Predicates.instanceOf(Texture.Symbol.class), out);
         }
-
     }
 
-    protected void dumpSymbols (Map<String, Symbol> symbols, Predicate<Object> predicate)
+    protected void dumpSymbols (
+        Map<String, Symbol> symbols, Predicate<Object> predicate, PrintStream out)
     {
         List<String> names = Lists.newArrayList(Maps.filterValues(symbols, predicate).keySet());
 
         Collections.sort(names);
         for (String name : names) {
-            System.out.println(name);
+            out.println(name);
         }
     }
 }
