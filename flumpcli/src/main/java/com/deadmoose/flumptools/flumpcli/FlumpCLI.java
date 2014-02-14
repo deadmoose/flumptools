@@ -29,6 +29,7 @@ public class FlumpCLI
             parser.parseArgument(args);
         } catch (Exception e) {
             printUsage(parser, System.err);
+            System.exit(-1);
         }
 
         if (cli.help) {
