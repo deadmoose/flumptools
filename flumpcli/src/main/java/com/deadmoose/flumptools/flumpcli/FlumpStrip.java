@@ -64,6 +64,9 @@ public class FlumpStrip extends LibraryTool
                         }
                     }
                 }
+            } else {
+                throw new IllegalArgumentException(
+                    "Unhandled Symbol type: " + symbol.getClass().getName());
             }
         }
 
