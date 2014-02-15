@@ -1,12 +1,15 @@
 package com.deadmoose.flumptools.flumpcli;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
 
@@ -64,17 +67,22 @@ public class FlumpStrip extends LibraryTool
             }
         }
 
-        // TODO: Actually do the work instead of just printing the refs
+        Map<String, Symbol> filteredSymbols = Maps.filterKeys(lib.symbols, Predicates.in(toKeep));
 
-        System.out.println("To keep:");
-        for (String name : toKeep) {
-            System.out.println("    " + name);
-        }
+        Library strippedLib = new Library(lib.frameRate,
+            Iterables.transform(Iterables.filter(filteredSymbols.values(), Predicates.instanceOf(Movie.Symbol.class)),
+                new Function<Symbol, Movie.Symbol>() {
+                    @Override public Movie.Symbol apply (Symbol input) {
+                        return (Movie.Symbol)input;
+                    }
+                }),
+            Iterables.transform(Iterables.filter(filteredSymbols.values(), Predicates.instanceOf(Texture.Symbol.class)),
+                new Function<Symbol, Texture.Symbol>() {
+                    @Override public Texture.Symbol apply (Symbol input) {
+                        return (Texture.Symbol)input;
+                    }
+                }));
 
-        System.out.println("To strip:");
-        for (String name :
-            Iterables.filter(lib.symbols.keySet(), Predicates.not(Predicates.in(toKeep)))) {
-            System.out.println("    " + name);
-        }
+        new FlumpDump().execute(strippedLib);
     }
 }
