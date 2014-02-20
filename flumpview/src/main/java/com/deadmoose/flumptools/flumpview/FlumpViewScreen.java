@@ -227,18 +227,22 @@ public class FlumpViewScreen extends UIScreen
 
     protected void openFileChooser ()
     {
-        if (_chooser != null) {
-            _chooser.cancelSelection();
-        }
+        new Thread(new Runnable() {
+            public void run () {
+                if (_chooser != null) {
+                    _chooser.cancelSelection();
+                }
 
-        _chooser = new JFileChooser(PlayN.storage().getItem(PREF_KEY));
-        _chooser.setFileFilter(new FileNameExtensionFilter("Flump libraries", "json"));
+                _chooser = new JFileChooser(PlayN.storage().getItem(PREF_KEY));
+                _chooser.setFileFilter(new FileNameExtensionFilter("Flump libraries", "json"));
 
-        int returnVal = _chooser.showOpenDialog(null);
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-            loadFlumpLibrary(_chooser.getSelectedFile());
-            _chooser = null;
-        }
+                int returnVal = _chooser.showOpenDialog(null);
+                if (returnVal == JFileChooser.APPROVE_OPTION) {
+                    loadFlumpLibrary(_chooser.getSelectedFile());
+                    _chooser = null;
+                }
+            }
+        }).start();
     }
 
     protected void loadFlumpLibrary (File file)
