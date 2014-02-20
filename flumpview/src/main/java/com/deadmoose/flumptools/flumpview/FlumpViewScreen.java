@@ -237,6 +237,7 @@ public class FlumpViewScreen extends UIScreen
         int returnVal = _chooser.showOpenDialog(null);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             loadFlumpLibrary(_chooser.getSelectedFile());
+            _chooser = null;
         }
     }
 
