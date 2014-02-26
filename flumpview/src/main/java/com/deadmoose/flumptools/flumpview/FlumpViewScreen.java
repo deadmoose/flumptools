@@ -238,8 +238,13 @@ public class FlumpViewScreen extends UIScreen
 
                 int returnVal = _chooser.showOpenDialog(null);
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
-                    loadFlumpLibrary(_chooser.getSelectedFile());
+                    final File file = _chooser.getSelectedFile();
                     _chooser = null;
+                    PlayN.platform().invokeLater(new Runnable() {
+                        @Override public void run () {
+                            loadFlumpLibrary(file);
+                        }
+                    });
                 }
             }
         }).start();
