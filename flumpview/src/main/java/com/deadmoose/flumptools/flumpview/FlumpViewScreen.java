@@ -186,6 +186,14 @@ public class FlumpViewScreen extends UIScreen
         _autoplay = new CheckBox();
         _autoplay.checked.update(true);
 
+        _playOnce = new Button("Play");
+        _playOnce.clicked().connect(new UnitSlot() {
+            @Override public void onEmit () {
+                _playingOnce = true;
+                _player.play(_player.movie().symbol().name(), true);
+            }
+        });
+
         _slider = new Slider(0, 0, 1);
         _slider.addStyles(Style.BACKGROUND.is(Background.solid(Colors.WHITE)));
         _slider.value.connect(new Slot<Float>() {
@@ -200,9 +208,11 @@ public class FlumpViewScreen extends UIScreen
 
         Group scrubber = new Group(AxisLayout.horizontal());
         scrubber.add(_autoplay);
+        scrubber.add(_playOnce);
         scrubber.add(_slider.setConstraint(AxisLayout.stretched()));
 
         _autoplay.checked.connectNotify(_slider.enabledSlot().compose(Functions.NOT));
+        _autoplay.checked.connectNotify(_playOnce.visibleSlot().compose(Functions.NOT));
 
         _root.add(scrubber.setConstraint(BorderLayout.SOUTH));
 
@@ -219,9 +229,15 @@ public class FlumpViewScreen extends UIScreen
     @Override public void paint (Clock clock)
     {
         super.paint(clock);
-        if (_player != null && _autoplay.checked.get()) {
+        if (_player != null && (_autoplay.checked.get() || _playingOnce)) {
             _player.paint(clock);
-            _slider.value.update(_player.movie().position() / _player.movie().symbol().duration);
+            if (_playingOnce && _player.looping()) {
+                // Our one-shot finished.
+                _playingOnce = false;
+                _slider.value.updateForce(1f);
+            } else {
+                _slider.value.update(_player.movie().position() / _player.movie().symbol().duration);
+            }
         }
     }
 
@@ -369,6 +385,9 @@ public class FlumpViewScreen extends UIScreen
 
     protected CheckBox _autoplay;
     protected Slider _slider;
+
+    protected Button _playOnce;
+    protected boolean _playingOnce;
 
     protected static final String PREF_KEY = "FlumpViewPath";
 }
