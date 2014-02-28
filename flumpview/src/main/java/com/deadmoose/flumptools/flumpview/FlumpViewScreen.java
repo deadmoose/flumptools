@@ -1,6 +1,9 @@
 package com.deadmoose.flumptools.flumpview;
 
+import java.awt.FileDialog;
+import java.awt.Frame;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -245,23 +248,47 @@ public class FlumpViewScreen extends UIScreen
     {
         new Thread(new Runnable() {
             public void run () {
-                if (_chooser != null) {
-                    _chooser.cancelSelection();
-                }
+                // Oh god damnit, write once run anywhere my ass. JFileChooser appears to have
+                // a race condition in the mac implementation such that it SOMETIMES just fails
+                // to do anything (but still blocks) and there's no way to see if it's working.
+                // So to work around that, let's fall back to awt's FileDialog which is cruder
+                // to use, but at least seems to work reliably. Oh, except on Linux, it's using
+                // such an incredibly ancient GTK+ implementation that the terrible swing one is
+                // an improvement. Oy.
+                final File file;
+                if (System.getProperty("os.name").equals("Linux")) {
+                    JFileChooser chooser = new JFileChooser(PlayN.storage().getItem(PREF_KEY));
+                    chooser.setFileFilter(new FileNameExtensionFilter("Flump libraries", "json"));
+                    int returnVal = chooser.showOpenDialog(null);
+                    if (returnVal == JFileChooser.APPROVE_OPTION) {
+                        file = chooser.getSelectedFile();
+                    } else {
+                        return;
+                    }
 
-                _chooser = new JFileChooser(PlayN.storage().getItem(PREF_KEY));
-                _chooser.setFileFilter(new FileNameExtensionFilter("Flump libraries", "json"));
-
-                int returnVal = _chooser.showOpenDialog(null);
-                if (returnVal == JFileChooser.APPROVE_OPTION) {
-                    final File file = _chooser.getSelectedFile();
-                    _chooser = null;
-                    PlayN.platform().invokeLater(new Runnable() {
-                        @Override public void run () {
-                            loadFlumpLibrary(file);
+                } else {
+                    FileDialog dialog = new FileDialog((Frame)null);
+                    dialog.setDirectory(PlayN.storage().getItem(PREF_KEY));
+                    dialog.setFilenameFilter(new FilenameFilter() {
+                        @Override public boolean accept (File dir, String name) {
+                            return name.endsWith(".json");
                         }
                     });
+
+                    dialog.setVisible(true);
+                    String filename = dialog.getFile();
+                    if (filename != null) {
+                        file = new File(dialog.getDirectory(), filename);
+                    } else {
+                        return;
+                    }
                 }
+
+                PlayN.platform().invokeLater(new Runnable() {
+                    @Override public void run () {
+                        loadFlumpLibrary(file);
+                    }
+                });
             }
         }).start();
     }
@@ -372,7 +399,6 @@ public class FlumpViewScreen extends UIScreen
 
     protected Root _root;
     protected ScreenStack _screens;
-    protected JFileChooser _chooser;
     protected MoviePlayer _player;
     protected GroupLayer _pannedLayer = PlayN.graphics().createGroupLayer();
     protected GroupLayer _flumpLayer = PlayN.graphics().createGroupLayer();
