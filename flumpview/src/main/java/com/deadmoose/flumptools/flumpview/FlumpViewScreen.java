@@ -8,9 +8,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileNameExtensionFilter;
-
 import com.google.common.collect.Lists;
 
 import com.deadmoose.flumptools.playn.FileAssets;
@@ -248,47 +245,24 @@ public class FlumpViewScreen extends UIScreen
     {
         new Thread(new Runnable() {
             public void run () {
-                // Oh god damnit, write once run anywhere my ass. JFileChooser appears to have
-                // a race condition in the mac implementation such that it SOMETIMES just fails
-                // to do anything (but still blocks) and there's no way to see if it's working.
-                // So to work around that, let's fall back to awt's FileDialog which is cruder
-                // to use, but at least seems to work reliably. Oh, except on Linux, it's using
-                // such an incredibly ancient GTK+ implementation that the terrible swing one is
-                // an improvement. Oy.
-                final File file;
-                if (System.getProperty("os.name").equals("Linux")) {
-                    JFileChooser chooser = new JFileChooser(PlayN.storage().getItem(PREF_KEY));
-                    chooser.setFileFilter(new FileNameExtensionFilter("Flump libraries", "json"));
-                    int returnVal = chooser.showOpenDialog(null);
-                    if (returnVal == JFileChooser.APPROVE_OPTION) {
-                        file = chooser.getSelectedFile();
-                    } else {
-                        return;
-                    }
-
-                } else {
-                    FileDialog dialog = new FileDialog((Frame)null);
-                    dialog.setDirectory(PlayN.storage().getItem(PREF_KEY));
-                    dialog.setFilenameFilter(new FilenameFilter() {
-                        @Override public boolean accept (File dir, String name) {
-                            return name.endsWith(".json");
-                        }
-                    });
-
-                    dialog.setVisible(true);
-                    String filename = dialog.getFile();
-                    if (filename != null) {
-                        file = new File(dialog.getDirectory(), filename);
-                    } else {
-                        return;
-                    }
-                }
-
-                PlayN.platform().invokeLater(new Runnable() {
-                    @Override public void run () {
-                        loadFlumpLibrary(file);
+                FileDialog dialog = new FileDialog((Frame)null);
+                dialog.setDirectory(PlayN.storage().getItem(PREF_KEY));
+                dialog.setFilenameFilter(new FilenameFilter() {
+                    @Override public boolean accept (File dir, String name) {
+                        return name.endsWith(".json");
                     }
                 });
+
+                dialog.setVisible(true);
+                String filename = dialog.getFile();
+                if (filename != null) {
+                    final File file = new File(dialog.getDirectory(), filename);
+                    PlayN.platform().invokeLater(new Runnable() {
+                        @Override public void run () {
+                            loadFlumpLibrary(file);
+                        }
+                    });
+                }
             }
         }).start();
     }
