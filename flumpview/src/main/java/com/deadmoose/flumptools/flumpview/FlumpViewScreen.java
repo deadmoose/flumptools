@@ -229,7 +229,8 @@ public class FlumpViewScreen extends UIScreen
     @Override public void paint (Clock clock)
     {
         super.paint(clock);
-        if (_player != null && (_autoplay.checked.get() || _playingOnce)) {
+        if (_player != null && _player.movie() != null &&
+            (_autoplay.checked.get() || _playingOnce)) {
             _player.paint(clock);
             if (_playingOnce && _player.looping()) {
                 // Our one-shot finished.
@@ -351,7 +352,9 @@ public class FlumpViewScreen extends UIScreen
                     });
                 }
 
-                ((ToggleButton)_movies.childAt(0)).selected().update(true);
+                if (_movies.childCount() > 1) {
+                    ((ToggleButton)_movies.childAt(0)).selected().update(true);
+                }
             }
 
             public void onFailure (Throwable cause) {
